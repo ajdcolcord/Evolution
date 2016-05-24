@@ -1,0 +1,17 @@
+#!/usr/bin/env python2.7
+
+import sys
+import json
+from feeding.species import *
+
+testInput = []
+try:
+    testInput = json.load(sys.stdin)
+
+    attacker, defender, lNeighbor, rNeighbor = Species.jsonToSituation(testInput)
+
+    # if malformed, isAttackable should exit itself
+    print json.dumps(Species.isAttackable(attacker, defender, lNeighbor, rNeighbor))
+except Exception as e:
+    quit()
+

@@ -1,0 +1,90 @@
+Wish List for Rest of Player Methods
+
+___________________________________________________________________________________________
+Data Definitions: 
+
+  PlayerState
+  {                                                      				
+    "num": player's number 	  // Nat
+   	"foodBag": foodbag    		// Nat
+    "species": species     		// List of Species						 
+    "traits": traits     	  	// List of TraitCard
+  }
+
+  Species                                              
+  {                                                         
+    "population": pop    		// Nat, 0-7 incl.                   
+    "bodySize": bodySize	  // Nat, 0-7 incl.                   
+    "traits": traits    		// List of TraitCard, len. <= 3   
+    "food": numFood      		// temporarily held during the feeding round, otherwise 0
+  }
+
+  TraitCard 
+  {
+  	“name”: traitName // String
+  	“food”: food // Integer -8 to 8 (carnivore) or -3 to 3 (vegetarian)
+  }
+
+
+___________________________________________________________________________________________
+Return Type Definitions:
+
+  Action is one of:
+    - Association
+    - Exchange
+
+  Assocation is one of:
+    - FaceUp
+    - FaceDown
+
+  FaceUp is:
+    - [SpeciesIndex, List of TraitCard] - TraitCard list can be of length 1, 2, or 3 
+
+  FaceDown is:
+    - [TraitCard, SpeciesIndex, TraitCardIndex]
+
+  SpeciesIndex is:
+    - Nat - the index of a given species in the PlayerState
+
+  TraitCardIndex is:
+    - Nat - the index of a TraitCard in an associated Species (at SpeciesIndex)
+
+  Exchange is one of:
+    - [TraitCard, “species”]
+    - [TraitCard, “body”] 
+    - [TraitCard, “population”]
+
+
+___________________________________________________________________________________________
+Wish List Definitions:
+
+  # This function is for when the player needs to pick a card
+  # from their hand to place on the watering hole at the start
+  # of the turn (step 2). The player decides which trait card
+  # to choose from it's hand, based on what they see fit from
+  # what exists in their PlayerState (provided by the dealer)
+  # and returns the trait card of choice (String)
+  # @param : PlayerState (defined above)
+  # @return : TraitCard
+  def choose_starting_trait_card(self, PlayerState):
+      ...
+
+  # Add a species to player’s species list at either left (beginning) 
+  # or right (end) of player’s current hand
+  # param: PlayerState = the player’s player state representation
+  # param: Species = the species to add to the player’s species list
+  # returns: String: One of:  - "left"
+  #                           - "right"
+  place_species(self, PlayerState, Species)
+      ...
+  	
+  # Step 3: This function handles this player’s turn to decide how they 
+  # use their remaining TraitCards in their hand. The player returns a 
+  # list of actions, which are defined below as Associations or Exchanges. 
+  # The player returns false if they decide to do nothing with their cards. 
+  # @param : PlayerState (defined above)
+  # @return : One of: - List of Action
+                      - False
+  def associate_or_exchange(PlayerState):
+          ...
+  	

@@ -1,0 +1,31 @@
++-----------+     +--------+   +------+   +------+  +----------+  +----------+
+|   Main    |     | dealer |   | in 1 |   | in 2 |  | player 1 |  | player 2 |
++----+------+     +---+----+   +----+-+   +----+-+  +-----+----+  +-----+----+
+     |                |             |          |          |             |
+     |                | start(b,c)  |          |          |             |
+     | start(j_ps)    +-----------> |          |          |             |
+     <------------------------------+          |          |             |
+     |                |             |start(j_ps)          |             |
+     +--------------------------------------------------->+             |
+     |                |             |          |          |             |
+     |                |             |          |          |             |
+     |                |   start(b,c)|          |          |             |
+     |                +------------------------>          |             |
+     |    start(j_ps) |             |          |          |             |
+     <-----------------------------------------+          |             |
+     |                |             |          |          | start(j_ps) |
+     +------------------------------------------------------------------>
+     |                |             |          |          |             |
+     |                |             |          |          |             |
+
+
+
+
+           b ~ an optional species board with pop. = 1
+           c ~ the appropriate number of cards
+           j_ps ~ current state of self to which the player added:
+               -- 1 species board [pop. = 1] w/o traits (if required)
+               || 1 trait card/existing species board
+               -- plus 3 additional trait cards
+
+           See remote.txt for format of these data representations

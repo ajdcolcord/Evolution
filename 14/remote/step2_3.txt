@@ -1,0 +1,42 @@
++------------+    +--------+   +------+   +------+  +----------+  +----------+
+|   Main     |    | dealer |   | in 1 |   | in 2 |  | player 1 |  | player 2 |
++------+-----+    +---+----+   +----+-+   +---+--+  +------+---+  +------+---+
+       |              |             |         |            |             |
+       |              | choose(s)   |         |            |             +--+
+       |              +-----------> |         |            |             |  |
+       |              |         choose(s)     |            |             |  |
+       |              +-------------+--------->            |             |  |
+       |choose(jcd)   |             |         |            |             |  +-+(C)
+       <--------------------------------------+            |             |  |
+       |choose(jcd)   |             |         |            |             |  |
+       <----------------------------|         |            |             |  |
+       |              |             |         |choose(jcd) |             |  |
+       |-------------------------------------------------->|choose(jcd)  |  |
+       +----------------------------------------------------------------->  |
+       |              |             |         | return(jr) |             |  |
+       <===================================================+ return(jr)  |  |
+       <=================================================================|  |
+       | return(jx)   +             +         +            +             +--+
+       |==============>             |         |            |             |
+       |              |             |         |            |             |
+
+    +    (C) No order is assumed here. All players might be queried "in parallel".
+
+         s ~ the state of all players
+         jcd ~ A JSON list containing [jc, jd]
+         jc ~ the JSON state of all players that precede this one for the turn
+             turn minus their cards and food in bag
+         jd ~ the JSON state of all players that come after this one for the
+             turn minus their cards and food in bag
+
+         jr ~ a representation of the following choices:
+             ++ the food card required (step 2)
+             ++ the card exchanges for (step 3):
+                ++ growing the populations of species boards
+                || growing the bodies of species boards
+                || adding new species board (to the right)
+                ++ replacing traits of existing species boards
+
+         jx - a list of choices that were returned from each player
+
+        * see remote.txt for more on data representations

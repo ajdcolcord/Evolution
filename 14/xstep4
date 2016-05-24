@@ -1,0 +1,63 @@
+#!/usr/bin/env python2.7
+
+import sys
+import json
+from dealer.dealer import Dealer
+
+
+try:
+    """
+    [Configuration, Step4] -> Configuration
+
+    Takes step4 input from Standard In, outputs to Standard Out
+
+
+    A Step4 is [Listof Action4]
+
+    An Action4 is [Nat [GP, ...] [GB, ...] [BT, ...] [RT, ...]]
+
+    A GP is ["population", Nat, Nat]
+    A GB is ["body", Nat, Nat]
+    A BT is One of: - [Nat]
+                    - [Nat, Nat]
+                    - [Nat, Nat, Nat]
+                    - [Nat, Nat, Nat, Nat]
+    A RT is [Nat, Nat, Nat]
+
+
+    A Configuration is [LOP+, Natural, LOC]
+    LOP+ is [Player+, ..., Player+]
+    Player+ is one of:
+            a regular Player
+            a Player with a "cards" field:
+                    [["id",Natural+],
+                     ["species",LOS],
+                     ["bag",Natural]
+                     ["cards",LOC]]
+    LOS is [Species,..., Species]
+    Species is [["food",Nat],
+            ["body",Nat],
+            ["population",Nat+],
+            ["traits",LOT]
+            ["fat-food" ,Nat]]
+    LOC is [SpeciesCard, ..., SpeciesCard]
+    SpeciesCard is [foodValue, Trait]
+    LOT is one of:
+                []
+                [Trait]
+                [Trait, Trait]
+                [Trait, Trait, Trait]
+
+    """
+    step4_input = json.loads(sys.stdin.read())
+    dealer = Dealer.create_dealer_from_configuration(step4_input[0])
+    dealer.add_silly_players()
+    step4_actions = Dealer.parse_step4(step4_input[1])
+    dealer.step4(step4_actions)
+    dealer.playerStates = dealer.originalPlayerOrder
+    json_dealer = dealer.create_json_from_dealer()
+
+    sys.stdout.write(json.dumps(json_dealer))
+
+except Exception as e:
+    quit()

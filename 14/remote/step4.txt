@@ -1,0 +1,55 @@
+        +----------+          +--------+   +------+   +------+   +----------+  +----------+
+        |   Main   |          | dealer |   | in 1 |   | in 2 |   | player 1 |  | player 2 |
+        +----+-----+          +---+----+   +----+-+   +--+---+   +-------+--+  +-------+--+
+             |                    |             |        |               |             |
+             |                    | step4i(r)   |        |               |             |
+             |                    +-----------> |        |               |             |
+             |                    | step4i(r)   |        |               |             |
+             |                    +--------------------> |               |             |
+             |                    |             |        |               |             |
+   feeding   |                    |             |        |               |             |
+      +------+                    |             |        |               |             |
+      |      |                    |feedNext(wh, xs)      |               |             | (D)
+      |      |                    +--------------------> |               |             |
+      |      |  feedNext(j_ys)    |             |        |               |             |
+      |      <-------------------------------------------+               |             |
+      |      |                    |             |        |               |feedNext(j_ys)
+      |      +------------------------------------------------------------------------->
+      |      |   return(jfc)      |             |        |               |             |
+      |      <=========================================================================|
+      |      |   return(jfc)      |             |        |               |             |
+      |      |====================>             |        |               |             |
+      |      |                    | feedNext(wh, xs)     |               |             |
+      |      |   feedNext(j_ys)   +-----------> |        |               |             |
+      |      <----------------------------------+        | feedNext(j_ys)|             |
+      |      +------------------------------------------------------------------------->
+      |      |    return(jfc)     |             +        +               |             |
+      |      <====================|====================================================|
+      |      |    return(jfc)     |             +        +               +             |
+      |      |====================>             |        |               |             |
+      |      |                    |             |        |               |             |
+      |     ++                    +             +        +               +             +
+     ...    ...                  ...           ...      ...             ...           ...
+      |      |                    +             +        +               +             +
+      |      |                    |             |        |               |             |
+      |      +                    +             +        +               +             +
+
+
+                 (D) The dealer will call only if there is more than one feeding choice.
+
+                     It will automatically feed
+                     ++ a single species with a non+full fat+food trait card
+                        (to the max possible)
+                     ++ a single vegetarian
+                     ++ a single carnivore that can attack only one species
+                        from a different player (no self+attack is allowed).
+
+                     NOTE: for the Silly player this API choice makes no difference.
+
+                 r ~ A PlayerAction representing the player's choices to trade cards
+                 xs ~ the players in attackable order [all playes starting from
+                      current, in turn order] - does not include information about their cards and foodbag
+                 wh ~ dealer's current knowledge of the watering hole
+                 j_ys ~ JSON representation of current PlayerState, wateringhole, and other PlayerStates
+
+                 jfc ~ food choice (what to eat next)

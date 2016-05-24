@@ -1,0 +1,18 @@
+UML Diagram for the End-Game Protocol
+
++---------+          +--------+     +------------+      +----------+  +------------+
+| Main    |          |Dealer  |     | PlayerState|      |Player1   |  |Player2     |
+|         |          |        |     |            |      |          |  |            |
++----+----+          +----+---+     +------+-----+      +-----+----+  +------+-----+
+     |      ScoreBoard    |                |                  |              |
+     <--------------------|                |                  |              |
+     | game_over(ScoreBoard)               |                  |              |
+     +--------------------+----------------------------------->              |
+     |                    |                |                  |              |
+     | game_over(ScoreBoard)               |                  |              |
+     +--------------------+-------------------------------------------------->
+     |                    |                |                  |              |
+     |                    |                |                  |              |
+
+
+     ScoreBoard will be a json list of lists containing a player's rank, ID, and score

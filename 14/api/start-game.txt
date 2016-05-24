@@ -1,0 +1,41 @@
+UML Diagram for the StartGame Period
+
+                +---------+
+                | Main    |
+                |         |
+                +----+----+
+                     |              +-----------+    +------------+
+                     |              |   Dealer  |    | PlayerState|
+                     |              |           |    |            |
+                     |              +-----+-----+    +-----+------+
+                     |                    |                |             +---------+
+                     |                    |                |             |  Player1|
+                     |                    |                |             |         |     +----------+
+                     |                    |                |             +----+----+     | Player2  |
+               +-----+                    |                |    register()    |          |          |
+               |     <--------------------------------------------------------+          +----+-----+
+  Each player  |     |                    |                |    ACK (Boolean) |               |
+  will get     |     +--------------------+----------------------------------->               |
+  registered+--+     | init_playerState(PlayerID)          |                  |               |
+  with this    |     +--------------------+---------------->                  |               |
+  process one  |     | PlayerState        |                |                  |               |
+  at a time,   |     <-------------------------------------+                  |               |
+  with their   +-----+                    |                |                  |               |
+  PlayerState  +-----+                    |                |                  | register()    |
+  objects being|     <------------------------------------------------------------------------+
+  created as   |     |                    |                |                  | ACK (Boolean) |
+  they         |     +--------------------+--------------------------------------------------->
+  register  +--+     | init_playerState(PlayerID)          |                  |               |
+               |     +--------------------+---------------->                  |               |
+               |     | PlayerState        |                |                  |               |
+               |     <-------------------------------------+                  |               |
+               +-----+                    |                |                  |               |
+                     |                    +                |                  |               |
+ Once there are      | run_game(List of PlayerState)       |                  |               |
+ enough players      +--------------------+>               |                  |               |
+ registered, and the |                    |                |                  |               |
+ 'timeout' for       |                    |                |                  |               |
+ registration ends,  |                    |                |                  |               |
+ Main hands over the |                    |                |                  |               |
+ initialized
+ PlayerStates

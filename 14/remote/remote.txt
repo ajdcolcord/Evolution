@@ -1,0 +1,233 @@
+Below is the description of the different protocols between different elements for the Evolution Game.
+
+_________________
+Data Definitions
+ - PlayerID: a JSON integer between 1 and 7 (inclusive)
+ - Nat: a JSON integer between 0 and 7 (inclusive)
+ - Nat+: a JSON Integer > 0
+ - Natural: a JSON integer >= 0
+ - FoodValue: a JSON integer between -8 and 8 (inclusive)
+ - Trait is one of: "carnivore", "ambush", "burrowing", "climbing", "cooperation", "fat-tissue", "fertile", "foraging",
+            "hard-shell", "herding", "horns", "long-neck", "pack-hunting", "scavenger", "symbiosis", or "warning-call"
+
+ --------------------------------------
+  *** Internal Data Representations***
+ --------------------------------------
+
+ - Species is a python object with the following fields:
+        - food: Natural
+        - body: Natural
+        - population: Nat+
+        - trait_cards: List of TraitCard
+        - fatFood: Natural
+
+ - b: a default Species object with pop=1, or False:
+        - food: 0
+        - body: 0
+        - population: 1
+        - trait_cards: []
+        - fatFood: 0
+
+ - c: Appropriate cards to hand to a playerState during step 1:
+        - listOf(TraitCard)
+
+ - TraitCard: a Python object with the following fields:
+        - name: Trait
+        - food: FoodValue
+
+ - s: python listOf(PlayerState) - All PlayerStates in the game
+
+ - PlayerState: a Python object with the following fields:
+        - id: PlayerID
+        - foodbag: Natural
+        - species: List of Species
+        - trait_cards: List of TraitCard
+
+ - wh: Natural representing the number of available food tokens in the watering hole
+
+ - xs is a listOf(PlayerState) which is in order starting with current player being asked to feed.
+
+
+ - GameState: a Python Tuple that contains copies of the following (from the Dealer object):
+        - PlayerState           (the current player's PlayerState)
+        - Integer (>= 0)        (the watering hole value)
+        - List of PlayerState   (the 'other' PlayerStates)
+
+ - Step4: a Python List of PlayerAction of length <= the number of Players in the game
+
+ - PlayerAction is a Python Object containing the following fields:
+        - food_card_index: Natural
+        - gp_list: List of GrowPopulation
+        - gb_list: List of GrowBody
+        - bt_list: List of BoardTrade
+        - rt_list: List of ReplaceTrait
+
+ - GrowPopulation: a Python Object containing:
+        - species_index: Natural
+        - card_trade_index: Natural
+
+ - GrowBody: a Python Object containing:
+        - species_index: Natural
+        - card_trade_index: Natural
+
+ - BoardTrade: a Python Object containing:
+        - trait_card_index: Natural
+        - cards_for_species: [Natural, ...] - can be length 1, 2, 3
+
+ - ReplaceTrait: a Python Object containing:
+        - species_index: Natural
+        - trait_to_remove: Natural
+        - trait_to_add: Natural
+
+ - FeedAction: is One of (using primitive Python data types):
+        - False
+        - Integer (>= 0)
+        - [Integer (>= 0), Integer (>= 0)]
+        - [Integer (>= 0), Integer (>= 0), Integer (>= 0)]
+
+ - ScoreBoard: is a JSON List containing each player's [rank, ID, Score] (all Natural's)
+        Example: [[1, 2, 40], [2, 3, 38], [3, 1, 30]]
+        Represents: 1) ID: 2 - Score: 40
+                    2) ID: 3 - Score: 38
+                    3) ID: 1 - Score: 30
+
+
+ ----------------------------------------------------------------------------
+ ***JSON objects to be handed between internal and external components***
+ ----------------------------------------------------------------------------
+
+ - j_ps: a JSON representation of a player's state:
+        - [["id", PlayerID],
+           ["species", LOS],
+           ["bag", Natural],
+           ["cards", LOC]]
+
+ - j_pub_ps: a JSON representation of a player's public state: LOS
+
+ - LOS is a JSON list [j_species, ..., j_species]
+
+ - j_species: A JSON representation of a Species:
+        - [["food": Nat],
+           ["body", Nat],
+           ["population", Nat+],
+           ["traits", LOT],
+           ["fat-food", Nat]] * Note: This ["fat-food", Nat] is an optional element of the JSON list
+
+ - LOT is a JSON list [Trait, ...] of size <= 3
+
+ - LOC is a JSON list [SpeciesCard, ..., SpeciesCard]
+
+ - SpeciesCard: a JSON list of the following format:
+        - [FoodValue, Trait]
+
+ - jc is a JSON list [j_ps, ..., j_ps] representing the players coming before the current player being queried
+ - jd is a JSON list [j_ps, ..., j_ps] representing the players coming after the current player being queried
+ - jcd is a JSON list [jc, jd]
+
+ - jr represents a choice made by players to act upon cards in their hand. Represented by the following:
+    [Natural,        -> Representing index of trait card in player's hand that they wish to put on the watering hole
+     [GP, ...],
+     [GB, ...],
+     [BT, ...],
+     [RT, ...]]
+
+ - GP represents a player's choice to grow the population of a species and trade in a card as follows:
+    - ["population", i, j] - i is the index of the species in player to grow, j is the index of the card to trade
+
+ - GB represents a player's choice to grow the body of a species and trade in a card as follows:
+    - ["body", i, j] - i is the index of the species in player to grow, j is the index of the card to trade
+
+ - BT represents a player's choice to trade one card, and up to 3 more cards, for a new species with up to 3 traits:
+    One of:
+        [i]                   -> Trade card at i for a new species with no traits
+        [i, j]                -> Trade cards at i, j for a new species with one traits
+        [i, j, k]             -> Trade cards at i, j, k for a new species with two traits
+        [i, j, k, l]          -> Trade cards at i, j, k, l for a new species with three traits
+
+ - RT represents a player's choice to replace a trait of a species with a trait in the player's hand:
+    [i, j, k] -               -> Replace species at i's trait at j with the trait a k in the player's hand
+
+ - jx - A JSON list [jr, ...] with length equal to the number of players in this game
+
+ - j_ys is a JSON list of the following form:
+        [j_ps,          -> represents the current playerstate of the queried player
+        Natural,        -> represents the number of food tokens in the watering hole
+        [j_pub_ps, ...]]    -> represents the public knowledge of all the other playerstates
+
+ - jfc is a JSON representation of a player's choice of how they wish to feed a species:
+       One of:
+                false               -> Player chooses not to feed a species
+                i                   -> Player feeds species at i
+                [i, num]            -> Player chooses to store 'num' food on fat-species at i
+                [i, j, k]           -> Player chooses to attack with it's own species at i, attacking
+                                              the player at index j's species at index k
+       *i, j, and k are all Naturals. num is a Nat+
+_________________
+Protocols
+
+signup.txt
+This file shows the Interaction Diagram between the Main, Dealer, PlayerState, and remote Players for
+the Evolution game when starting up a new game.
+
+    API Methods:
+        - register(): the player will call this to the Main
+            - the Main will respond with a Boolean - True if registered, False if failed
+
+        - nu: Main will call new(p1, ...) on a Dealer, giving the dealer a list of Player pointers from the
+             players that have signed up.
+
+        - new(p): For each player pointer p obtained from main, Dealer will call new(p) on the internal PlayerState,
+                  creating a new PlayerState in this dealer for each player
+
+
+
+step1.txt
+This file shows the Interaction Diagram between each component during step 1 of an Evolution Game.
+
+    API Methods:
+        Internal PlayerState:
+            start(b, c): The Dealer will call this on a PlayerState, which will interpret the given speciesboard b, and
+                         the given cards c, and the call start to a player.
+
+        External Player:
+            start(j_ps): This will be called on each external Player, to give the player it's state so that they can
+                         store it for future decisions
+
+step2_3.txt
+This file shows the Interaction Diagram between each component during the process of player's choosing card actions
+
+    API Methods:
+        Internal PlayerState:
+            choose(s): The Dealer hands a PlayerState information about all playerStates, to be organized into a
+                        data representation that will be sent to a player. We will call choose on the player with
+                        this data representation
+
+        External Player:
+            choose(jcd): Main will query an External Player to choose any cards in the player's hand that they wish
+                          to trade, giving back indicators for which cards are traded, and for what (jfc).
+
+
+step4.txt
+This file shows the Interaction Diagram between the components of the Evolution game for the feeding process
+
+    API Methods:
+        Internal PlayerState:
+            step4i(r): The Dealer will call this for each PlayerState to allow that player to update it's state
+                        based on the player's actions from step 2 and 3.
+
+            feedNext(wh, xs): The Dealer will call this on each PlayerState to tell that PlayerState to call feedNext on
+                       the external Player that it represents, giving information about other players, and wateringHole
+
+        External Player:
+            feedNext(j_ys): Main will cal this on the external Player to obtain a feeding choice (jfc). This will be
+                            return to Main, which will pass the jfc to the Dealer to be interpreted.
+
+
+end.txt
+This file shows the Interaction Diagram between the components of the Evolution game when the dealer is finished running
+the game.
+
+    API Methods:
+        External Player:
+            game_over(ScoreBoard): External Player will receive the results of the game (ScoreBoard) and the system will
+            close.

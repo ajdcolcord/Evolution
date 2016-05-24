@@ -1,0 +1,43 @@
+#!/usr/bin/env python2.7
+
+import sys
+import json
+from dealer.dealer import Dealer
+from gui import displayController
+
+
+
+testInput = []
+try:
+    """
+    Configuration -> Void - (Executes View)
+    Takes input from Standard In, outputs to a GUI window
+    A Configuration is [LOP+, Natural, LOC]
+    LOP+ is [Player+, ..., Player+]
+    Player+ is one of:
+            a regular Player
+            a Player with a "cards" field:
+                    [["id",Natural+],
+                     ["species",LOS],
+                     ["bag",Natural]
+                     ["cards",LOC]]
+    LOS is [Species,..., Species]
+    Species is [["food",Nat],
+            ["body",Nat],
+            ["population",Nat+],
+            ["traits",LOT]
+            ["fat-food" ,Nat]]
+    LOC is [SpeciesCard, ..., SpeciesCard]
+    SpeciesCard is [foodValue, Trait]
+    LOT is one of:
+                []
+                [Trait]
+                [Trait, Trait]
+                [Trait, Trait, Trait]
+
+    """
+    configuration_input = json.loads(sys.stdin.read())
+    displayController.runBothWindows(configuration_input)
+
+except Exception as e:
+    quit()

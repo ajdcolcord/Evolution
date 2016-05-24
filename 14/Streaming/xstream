@@ -1,0 +1,53 @@
+#!/usr/bin/env python2.7
+
+import sys
+import json
+
+count = 0
+endFlags = ["]", "}"]
+separationFlags = [" ", ",", "\n"]
+
+def exitProgram():
+    print "\n"
+    json.dump({"count": count}, sys.stdout)
+    print "\n"
+    sys.exit()
+
+def printJson(s):
+    global count
+    count += 1
+    print json.dumps(json.loads(s))
+
+def isValidJson(j):
+     try:
+         json.loads(j)
+         return True
+     except:
+         return False
+
+def parseChars(s):
+    acc = ""
+    for i in range(len(s) - 1):
+        acc += s[i]
+        if s[i] in endFlags:
+            if isValidJson(acc):
+                printJson(acc)
+                return parseChars(s[i+1:])
+            else:
+                exitProgram()
+        elif isValidJson(acc) and s[i+1] in separationFlags:
+            printJson(acc)
+            return parseChars(s[i+1:])
+    return s
+
+input = ""
+while True:
+    line = sys.stdin.readline()
+
+    if line == "":
+        exitProgram()
+
+    input += line
+    remaining = parseChars(input)
+    input = remaining
+

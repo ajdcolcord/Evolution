@@ -1,0 +1,75 @@
+#!/usr/bin/env python2.7
+
+import sys
+import socket
+import json
+import select
+from feeding.constants import *
+from dealer.dealer import Dealer
+from dealer.proxyPlayer import ProxyPlayer
+
+num_players = int(sys.argv[1])
+
+if not (MIN_PLAYERS <= num_players <= MAX_PLAYERS):
+    print "Invalid number of players"
+    sys.exit(0)
+
+
+def main():
+    """
+    Effect: Run a full game of Evolution by taking in players, creating a dealer, and using the dealer to run the game
+    :return: Void
+    """
+    sock = create_server()
+    players = signup(sock)
+    dealer = Dealer.new(players)
+    dealer.runGame()
+
+
+def create_server():
+    """
+    Sets up the socket connection for the Main Server, returning the new socket.
+    :return: Socket - the server's socket
+    """
+    sock = socket.socket()
+    socket.setdefaulttimeout(TIMEOUT)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+    sock.bind((SERVER_HOST, PORT))
+    sock.listen(BACKLOG)
+    return sock
+
+
+def signup(sock):
+    """
+    Runs the signup procedure for the Server, listening for new players to join.
+    :param sock: Socket - the main server's socket connection
+    :return: List of ProxyPlayer - the players that will be participating in the Evolution game
+    """
+    i = 0
+    players = []
+    while i < num_players:
+        ready, j, x = select.select([sock], [], [], SIGNUP_WINDOW)
+        if ready:
+            (player_socket, c_addr) = sock.accept()
+            try:
+                info = json.loads(player_socket.recv(MESSAGE_SIZE))
+                if isinstance(info, basestring):
+                    new_proxy = ProxyPlayer.new(player_socket, info)
+                    players.append(new_proxy)
+                    player_socket.send(json.dumps(OK))
+                    i += 1
+            except socket.timeout:
+                if i >= MIN_PLAYERS:
+                    break
+                continue
+            except ValueError:
+                continue
+        elif i >= MIN_PLAYERS:
+            break
+
+    return players
+
+
+if __name__ == '__main__':
+    main()
+

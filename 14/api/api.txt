@@ -1,0 +1,117 @@
+Below is the description of the different protocols between different elements for the Evolution Game.
+
+_________________
+Data Definitions
+ - PlayerID: an integer between 1 and 7 (inclusive)
+
+ - PlayerState: a Python object with the following fields:
+        - id: PlayerID
+        - foodbag: Integer (>= 0)
+        - species: List of Species
+        - trait_cards: List of TraitCard
+
+ - Species: a Python object with the following fields:
+        - food: Integer (>= 0)
+        - body: Integer (>= 0)
+        - population: Integer (>= 0)
+        - trait_cards: List of TraitCard
+        - fatFood: Integer (>= 0)
+
+ - TraitCard: a Python object with the following fields:
+        - name: String
+        - food: Integer in range [-8, 8]
+
+ - GameState: a Python Tuple that contains copies of the following (from the Dealer object):
+        - PlayerState           (the current player's PlayerState)
+        - Integer (>= 0)        (the watering hole value)
+        - List of PlayerState   (the 'other' PlayerStates)
+
+ - Step4: a Python List of PlayerAction of length <= the number of Players in the game
+
+ - PlayerAction: a Python List containing:
+        - Integer (>= 0)
+        - List of GrowPopulation
+        - List of GrowBody
+        - List of BoardTrade
+        - List of ReplaceTrait
+
+ - GrowPopulation: a Python List containing:
+        - "population"
+        - Integer (>= 0)
+        - Integer (>= 0)
+
+ - GrowBody: a Python List containing:
+        - "body"
+        - Integer (>= 0)
+        - Integer (>= 0)
+
+ - BoardTrade: a Python List containing:
+        - Integer (>= 0)
+        - List of (Integer (>= 0)) - of size <= 3
+
+ - ReplaceTrait: a Python List containing:
+        - Integer (>= 0)
+        - Integer (>= 0)
+        - Integer (>= 0)
+
+ - FeedAction: is One of (using primitive Python data types):
+        - False
+        - Integer (>= 0)
+        - [Integer (>= 0), Integer (>= 0)]
+        - [Integer (>= 0), Integer (>= 0), Integer (>= 0)]
+
+ - Dealer: is a Python object containing:
+        - playerStates: List of PlayerState
+        - wateringHole: Integer (>= 0)
+        - hand: List of TraitCard
+
+ - ScoreBoard: is a Python List of PlayerState that is sorted in decreasing order determined by the game's scoring
+
+
+_________________
+Protocols
+
+start-game.txt
+This file shows the Interaction Diagram between the Main, Dealer, PlayerState, and remote Players for
+the Evolution game when starting up a new game.
+
+    API Methods:
+        - register(): the player will call this to the Main
+            - the Main will respond with an ACK (a Boolean - True if registered, False if failed)
+
+        - init_playerState(PlayerID): Main will request a new PlayerState object from PlayerState with the PlayerID
+            - PlayerState will return a new PlayerState object to Main
+
+        - run_game(List of PlayerState): Main will call the run_game function on the Dealer, once all of the
+          PlayerStates are created, giving it the List of PlayerStates, the Dealer will begin the game.
+
+mid-game.txt
+This file shows the Interaction Diagram between the Main, Dealer, PlayerState, and remote Players for
+the Evolution game during the game, including each round and turn.
+
+    API Methods:
+        - chooseAction(GameState, Step4): the Main calls this for each player to add this player's action to Step4.
+          This is when the player would desire to use it's cards in it's hand prior to a feeding round. Each time
+          chooseAction is called on a player, the previous player's PlayerAction choices are contained in the given Step4.
+            - the Player will return an PlayerAction to Main with its choices
+
+        - step4(Step4): The Main calls this on the Dealer, handing over the list of PlayerActions in order to update
+          each PlayerState, in preparation for starting the feeding rounds.
+            - after the feeding rounds are complete, the Dealer will send back its updated state (Dealer object), and
+             True (if the game is over) or False (if another turn needs to occur). This will be represented as a
+             Python Tuple(Dealer, Boolean)
+
+        - feed(GameState): The Dealer calls this on each player to request the desired FeedAction from the Player.
+            - the Player will return a FeedAction to the Dealer. The Dealer will then use this to update it's state.
+
+
+
+end-game.txt
+This file shows the Interaction Diagram between the Main, Dealer, PlayerState, and remote Players for
+the Evolution game for the process of ending a game (assuming that the returned Boolean from chooseAction in the
+mid-game protocol was True).
+
+    API Methods:
+        - game_over(ScoreBoard): The Main calls this function on each Player, sending along the ScoreBoard. Each Player
+          may implement this function however they desire (such as for displaying the results). The Main would close
+          at this point (no return value).

@@ -1,0 +1,44 @@
+#!/usr/bin/env python2.7
+
+import sys
+import json
+from dealer.dealer import Dealer
+
+testInput = []
+try:
+    """
+    Configuration -> Configuration
+    Takes input from Standard In, outputs to Standard Out
+    A Configuration is [LOP+, Natural, LOC]
+    LOP+ is [Player+, ..., Player+]
+    Player+ is one of:
+            a regular Player
+            a Player with a "cards" field:
+                    [["id",Natural+],
+                     ["species",LOS],
+                     ["bag",Natural]
+                     ["cards",LOC]]
+    LOS is [Species,..., Species]
+    Species is [["food",Nat],
+            ["body",Nat],
+            ["population",Nat+],
+            ["traits",LOT]
+            ["fat-food" ,Nat]]
+    LOC is [SpeciesCard, ..., SpeciesCard]
+    SpeciesCard is [foodValue, Trait]
+    LOT is one of:
+                []
+                [Trait]
+                [Trait, Trait]
+                [Trait, Trait, Trait]
+
+    """
+    configuration_input = json.loads(sys.stdin.read())
+    dealer = Dealer.create_dealer_from_configuration(configuration_input)
+    dealer.feed1()
+    json_dealer = dealer.create_json_from_dealer()
+
+    sys.stdout.write(json.dumps(json_dealer))
+
+except Exception as e:
+    quit()

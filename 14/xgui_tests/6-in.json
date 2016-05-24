@@ -1,0 +1,18 @@
+[
+  [
+    [["id", 1],
+      ["species", []],
+      ["bag", 0],
+      ["cards", [[3, "carnivore"], [2, "foraging"], [4, "long-neck"]]]],
+    [["id", 2], ["species", [[["food", 1],
+                              ["body", 5],
+                              ["population", 1],
+                              ["traits", ["horns"]]]]],
+      ["bag", 0]]
+  ],
+  1,
+  [
+    [4, "carnivore"],
+    [3, "scavenger"]
+  ]
+]

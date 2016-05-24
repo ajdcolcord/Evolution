@@ -1,0 +1,20 @@
+[
+  [
+    [["id", 1],
+      ["species", [[["food", 0],
+                    ["body", 5],
+                    ["population", 1],
+                    ["traits", ["carnivore"]]]]],
+      ["bag", 0]],
+    [["id", 2], ["species", [[["food", 1],
+                              ["body", 5],
+                              ["population", 1],
+                              ["traits", ["horns"]]]]],
+      ["bag", 0]]
+  ],
+  1,
+  [
+    [4, "carnivore"],
+    [3, "scavenger"]
+  ]
+]

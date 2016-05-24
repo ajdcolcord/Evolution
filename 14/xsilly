@@ -1,0 +1,54 @@
+#!/usr/bin/env python2.7
+
+import sys
+import json
+from feeding.player import Player
+
+
+try:
+    """
+    Choice -> Action4
+
+    A Choice is [Player+, LOS, LOS]
+    Player+ is one of:
+            a regular Player
+            a Player with a "cards" field:
+                    [["id",Natural+],
+                     ["species",LOS],
+                     ["bag",Natural]
+                     ["cards",LOC]]
+    LOS is [Species,..., Species]
+    Species is [["food",Nat],
+            ["body",Nat],
+            ["population",Nat+],
+            ["traits",LOT]
+            ["fat-food" ,Nat]]
+    LOC is [SpeciesCard, ..., SpeciesCard]
+    SpeciesCard is [foodValue, Trait]
+    LOT is one of:
+                []
+                [Trait]
+                [Trait, Trait]
+                [Trait, Trait, Trait]
+
+    An Action4 is [Nat [GP, ...] [GB, ...] [BT, ...] [RT, ...]]
+
+    A GP is ["population", Nat, Nat]
+    A GB is ["body", Nat, Nat]
+    A BT is One of: - [Nat]
+                    - [Nat, Nat]
+                    - [Nat, Nat, Nat]
+                    - [Nat, Nat, Nat, Nat]
+    A RT is [Nat, Nat, Nat]
+
+    """
+    json_choice = json.loads(sys.stdin.read())
+    player = Player.new(1)
+    choice = Player.parse_choice(json_choice)
+    player.start(choice[0])
+    action = player.choose(choice[1], choice[2]).to_json_action_4()
+
+    sys.stdout.write(json.dumps(action))
+
+except Exception as e:
+    quit()

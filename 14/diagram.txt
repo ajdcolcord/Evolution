@@ -1,0 +1,35 @@
+UML Diagram for Evolution Components
+
+       +-------------+
+       | Main Server |
+       +------+------+
+              |
+              |
+              |
+       +------v----------------------+
+       | Dealer                      |
+       +-----------------------------+                 +--------------------------+
+       | List of PlayerState         +-----------------> PlayerState              <--------------------------+
+       | WateringHole (Nat)          |                 +--------------------------+                          |
+ +-----+ List of TraitCard           |                 | ID (Nat)                 |                          |
+ |     | List of Nat (Fed Player IDs)|                 | FoodBag (Nat)            |                          |
+ |     +-----------------------------+   +-------------+ List of TraitCard        |                          |
+ |                                       |  +----------+ List of Species          |                          |
+ |                                       |  |          | WateringHole (Nat)       |         +--------------+ |
+ |                                       |  |          | Player (player_reference)+----+----> Player       | |
+ |         +--------------+              |  |          | String (info)            |    |    +--------------+ |
+ +---------> TraitCard    <--------------+  |          +--------------------------+    |    | ID (Nat)     | |
+           +--------------+                 |                                          |    | playerState  +-+
+           | Name (string)|                 |                                          |    | String (info)|
+           | FoodVal (Int)|                 |                                          |    +--------------+
+           +--------------+                 |   +-------------------+                  |
+                                            +---> Species           |                  |
+                                                +-------------------+                  |    +-------------+
+                                                | Food (Nat)        |                  +---->ProxyPlayer  |
+                                                | Body (Nat)        |                       +-------------+     remote_player  +------------+
+                                                | Population (Nat)  |                       |Socket       |~~~~~~~~~~//~~~~~~~~> ProxyDealer|
+                                                | List of TraitCard |                       |String (info)|                    +------------+
+                                                | FatFood (Nat)     |                       +-------------+                    | Player     |
+                                                +-------------------+                                                          | Socket     |
+                                                                                                                               +------------+
+

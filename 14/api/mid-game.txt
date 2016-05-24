@@ -1,0 +1,34 @@
+           UML Diagram for the Mid-Game Turns Protocol
+
+           +---------+          +--------+     +------------+      +----------+  +------------+
+           | Main    |          |Dealer  |     | PlayerState|      |Player1   |  |Player2     |
+           |         |          |        |     |            |      |          |  |            |
+           +----+----+          +----+---+     +------+-----+      +-----+----+  +-------+----+
+                |                    |                |                  +               |
+                |                    |                | chooseAction(GameState, Step4)   |
+chooseAction and+-------------------------------------------------------->               |
+return values   |                    |                | PlayerAction     |               |
+(PlayerAction)  <--------------------------------------------------------+               +
+are called based|                    |                |                  |chooseAction(GameState, Step4)
+on the player   +------------------------------------------------------------------------>
+order, one at   |                    |                |                  |PlayerAction   |
+a time.         <------------------------------------------------------------------------+
+                |                    |                |                  |               |
+                | step4(Step4)       |                |                  |               |
+                +-------------------->                |   feed(GameState)|               | Each feed call (with the
+                |                    +----------------------------------->               | returned FeedAction from
+                |                    |                |   FeedAction     |               | the player) is called
+                |                    <-----------------------------------+               | one player at a time
+                |                    |                |                  | feed(GameState) until no players will
+                |                    +---------------------------------------------------> continue to feed
+                |                    |                |                  | FeedAction    |
+                |                    <---------------------------------------------------+
+                | (Dealer, Boolean)  |                |                  |               |
+Once the feeding<--------------------+                |                  |               |
+round is over,  |                    |                |                  |               |
+the Dealer sends|                    |                |                  |               |
+back itself and |                    |                |                  |               |
+a Boolean that  |                    |                |                  |               |
+indicates the   |                    |                |                  |               |
+end of a game   |                    |                |                  |               |
+
